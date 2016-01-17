@@ -1,8 +1,8 @@
 {
-  "name": "react-ts-scss-blank",
+  "name": "simon-game",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "bundle.js",
   "scripts": {
     "start": "webpack-dev-server"
   },
