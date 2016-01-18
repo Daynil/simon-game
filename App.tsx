@@ -5,7 +5,8 @@ class App extends React.Component<any, any> {
 	constructor() {
 		super();
 		this.state = {
-			viewHeight: this.getSmallestViewportDimen()
+			viewHeight: this.getSmallestViewportDimen(),
+			count: 0
 		};
 	}
 	
@@ -31,7 +32,9 @@ class App extends React.Component<any, any> {
 			<div>
 				<div id="page-wrapper">
 					<h1 id="title">Simon</h1>
-					<Board viewHeight={this.state.viewHeight} />
+					<Board 
+						viewHeight={this.state.viewHeight}
+						count={this.state.count} />
 				</div>
 				<Foot />
 			</div>
@@ -70,7 +73,9 @@ class Board extends React.Component<any, any> {
 				<div className="color-block" id="red"></div>
 				<div className="color-block" id="blue"></div>
 				<div className="color-block" id="yellow"></div>
-				<div id="inner-circle" style={this.getInnerDimens()}></div>
+				<div id="inner-circle" style={this.getInnerDimens()}>
+					<span id="count">Count: {this.props.count}</span>
+				</div>
 			</div>
 		);
 	}

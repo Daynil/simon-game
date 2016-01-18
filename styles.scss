@@ -2,10 +2,14 @@ $color-theme-main: hsl(144, 57%, 59%);
 $color-theme-main-light: hsl(144, 57%, 75%);
 $color-theme-alt: hsl(20, 100%, 46%);
 
-$color-green: green;
-$color-red: red;
-$color-blue: blue;
-$color-yellow: yellow;
+$color-green: hsl(130, 70%, 45%);
+$color-green-hover: hsl(130, 70%, 70%);
+$color-red: hsl(5, 70%, 45%);
+$color-red-hover: hsl(5, 70%, 70%);
+$color-blue: hsl(210, 70%, 45%);
+$color-blue-hover: hsl(210, 70%, 70%);
+$color-yellow: hsl(60, 70%, 45%);
+$color-yellow-hover: hsl(60, 90%, 75%);
 
 $color-dark: hsl(36, 4%, 24%);
 $color-light: hsla(36, 4%, 24%, 0.1);
@@ -15,6 +19,7 @@ $font-sub:  normal 20px 'Open Sans';
 $font-small: normal 15px 'Open Sans';
 
 #page-wrapper {
+	min-height: 550px;
 	height: 100vh;
 	width: 100%;
 	margin-top: -40px;
@@ -24,7 +29,7 @@ $font-small: normal 15px 'Open Sans';
 	text-align: center;
 	
 	#title {
-		color: $color-theme-main;
+		color: aliceblue;
 	}
 	
 	#board {
@@ -33,30 +38,50 @@ $font-small: normal 15px 'Open Sans';
 		overflow: hidden;
 		margin: 0 auto;
 		.color-block {
+			cursor: pointer;
 			display: inline-block;
+			border-radius: 25px;
 			width: 50%;
 			height: 50%;
 		}
 		#green {
 			background-color: $color-green;
+			&:hover {
+				background-color: $color-green-hover;
+			}
 		}
 		#red {
 			background-color: $color-red;
+			&:hover {
+				background-color: $color-red-hover;
+			}
 		}
 		#blue {
 			position: relative;
 			bottom: 8px;
-			background-color: $color-blue;			
+			background-color: $color-blue;
+			&:hover {
+				background-color: $color-blue-hover;
+			}			
 		}
 		#yellow {
 			position: relative;
 			bottom: 8px;		
 			background-color: $color-yellow;
+			&:hover {
+				background-color: $color-yellow-hover;
+			}
 		}
 		#inner-circle {
 			position: absolute;
 			border-radius: 50%;
 			background-color: $color-dark;
+			font: $font-main;
+			color: aliceblue;
+			#count {
+				position: relative;
+				top: 50px;
+			}
 		}
 	}
 }
@@ -78,7 +103,7 @@ $font-small: normal 15px 'Open Sans';
 }
 
 #foot i, #foot a {
-	color: $color-theme-main;
+	color: limegreen;
 	transition: 0.6s;
 	text-decoration: none;
 }
@@ -89,5 +114,5 @@ $font-small: normal 15px 'Open Sans';
 }
 
 #foot i {
-	padding-left: 2px;
+	padding-right: 2px;
 }
