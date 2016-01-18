@@ -45,31 +45,31 @@ $font-small: normal 15px 'Open Sans';
 			height: 50%;
 		}
 		#green {
-			background-color: $color-green;
+			//background-color: $color-green;
 			&:hover {
-				background-color: $color-green-hover;
+				//background-color: $color-green-hover;
 			}
 		}
 		#red {
-			background-color: $color-red;
+			//background-color: $color-red;
 			&:hover {
-				background-color: $color-red-hover;
+				//background-color: $color-red-hover;
 			}
 		}
 		#blue {
 			position: relative;
 			bottom: 8px;
-			background-color: $color-blue;
+			//background-color: $color-blue;
 			&:hover {
-				background-color: $color-blue-hover;
+				//background-color: $color-blue-hover;
 			}			
 		}
 		#yellow {
 			position: relative;
 			bottom: 8px;		
-			background-color: $color-yellow;
+			//background-color: $color-yellow;
 			&:hover {
-				background-color: $color-yellow-hover;
+				//background-color: $color-yellow-hover;
 			}
 		}
 		#inner-circle {
