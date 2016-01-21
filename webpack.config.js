@@ -7,7 +7,7 @@ module.exports = {
 	devtool: 'source-map',
 	devServer: {
 		inline: true,                                     // Reload on the fly
-		port: 3333                                       // any
+		port: 3333,                               // any
 	},
 	resolve: {
 	// Add resolvable extensions to avoid typing extensions in imports.

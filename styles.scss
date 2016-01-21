@@ -78,19 +78,29 @@ $font-small: normal 15px 'Open Sans';
 			background-color: $color-dark;
 			font: $font-main;
 			color: aliceblue;
+			#count {
+				font: normal 1.5em 'Orbitron';
+				color: $color-red;
+				padding: 8px;
+				border: 1px solid hsl(1, 0%, 19%);
+				box-shadow: inset 2px 2px 9px 4px hsl(0, 0%, 18%);
+				border-radius: 10px;
+				width: 1.8em;
+				display: inline-block;
+			}
 			#controls {
 				position: relative;
-				top: 50px;
+				top: 1.65em;
 				font-size: 0.7em;
 				#start {
 					position: relative;
-					top: 45px;
+					top: 2.1em;
 					right: 10px;
 					@extend .border-button;
 				}
 				#reset {
 					position: relative;
-					top: 45px;
+					top: 2.1em;
 					left: 10px;
 					@extend .border-button;
 				}
@@ -106,7 +116,7 @@ $font-small: normal 15px 'Open Sans';
 				}
 				#strict {
 					position: relative;
-					top: 90px;
+					top: 4.4em;
 					left: 5px;
 					padding-left: 5px;
 					@extend .border-button;

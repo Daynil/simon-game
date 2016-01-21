@@ -24,7 +24,6 @@ class App extends React.Component<any, any> {
 	
 	componentDidMount() {
 		window.addEventListener('resize', (e) => this.handleResize(e));
-		this.game.playPattern();
 	}
 	
 	handleResize(e) {
@@ -85,11 +84,13 @@ class Board extends React.Component<any, any> {
 	getInnerDimens() {
 		let displacement = (this.props.viewHeight * this.boardFactor)/2 
 							- (this.props.viewHeight * this.innerFactor)/2;
+		let fontEMScale = 30 * (this.props.viewHeight / 949);
 		return {
 			width: this.props.viewHeight * this.innerFactor, 
 			height: this.props.viewHeight * this.innerFactor,
 			top: displacement,
-			left: displacement
+			left: displacement,
+			fontSize: fontEMScale
 		}
 	}
 	
@@ -98,6 +99,14 @@ class Board extends React.Component<any, any> {
 		if (this.gameState.board[color]) returnColor = this.buttonColors[`${color}Active`];
 		return {
 			backgroundColor: returnColor
+		}
+	}
+	
+	isStrict() {
+		let strictColor = "darkred";
+		if (this.gameState.isStrict) strictColor = "red";
+		return {
+			backgroundColor: strictColor
 		}
 	}
 	
@@ -110,13 +119,13 @@ class Board extends React.Component<any, any> {
 				<div className="color-block" id="yellow" style={this.getStatus('yellow')} onClick={() => this.props.game.playerTest('yellow')}></div>
 				<div id="inner-circle" style={this.getInnerDimens()}>
 					<div id="controls">
-						<span id="count">Count: {this.gameState.actionPattern.length}</span>
+						<span id="count">{this.gameState.actionPattern.length}</span>
 						<div>
 							<span id="start" onClick={() => this.props.game.startGame()}>Start</span>
 							<span id="reset" onClick={() => this.props.game.reset()}>Reset</span>
 						</div>
 						<div>
-							<span id="strict"><span id="strict-light"></span>Strict</span>
+							<span id="strict" onClick={() => this.props.game.toggleStrict()}><span id="strict-light" style={this.isStrict()}></span>Strict</span>
 						</div>
 					</div>
 				</div>
@@ -150,6 +159,7 @@ class Game {
 		playerAction: false,
 		playerPattern: [],
 		actionPattern: [],
+		isStrict: false,
 		board: {
 			['green']: false, ['red']: false, ['yellow']: false, ['blue']: false
 		}
@@ -160,11 +170,17 @@ class Game {
 		['red']: new Audio('https://s3.amazonaws.com/freecodecamp/simonSound2.mp3'), 
 		['yellow']: new Audio('https://s3.amazonaws.com/freecodecamp/simonSound3.mp3'), 
 		['blue']: new Audio('https://s3.amazonaws.com/freecodecamp/simonSound4.mp3'),
-		['mistake']: new Audio('http://res.cloudinary.com/dz9rf4hwz/video/upload/v1453320543/error_ecvn1v.wav')
+		['mistake']: new Audio('http://res.cloudinary.com/dz9rf4hwz/video/upload/v1453320543/error_ecvn1v.wav'),
+		['win']: new Audio('http://res.cloudinary.com/dz9rf4hwz/video/upload/v1453358424/winsound_xzwkc6.wav')
 	}
 	
 	constructor(refreshState) {
 		this.refreshState = refreshState;
+	}
+	
+	toggleStrict() {
+		this.gameState.isStrict = !this.gameState.isStrict;
+		this.refreshState();
 	}
 	
 	playerTest(color: string) {
@@ -172,18 +188,29 @@ class Game {
 		this.gameState.playerPattern.push(color);
 		let currMove = this.gameState.playerPattern.length-1;
 		if (this.gameState.playerPattern[currMove] == this.gameState.actionPattern[currMove]) {
-			this.activate(color, true);
 			if (this.gameState.playerPattern.length == this.gameState.actionPattern.length) {
+				if (this.gameState.actionPattern.length == 20) {
+					this.activate(color, false);
+					this.sounds['win'].volume = 0.4;
+					this.sounds['win'].play();
+					this.reset();
+					return;
+				}
 				this.gameState.playerAction = false;
 				this.gameState.playerPattern = [];
 				this.nextRound();
 			}
+			this.activate(color, true);
 		} else {
 			this.activate(color, false);
 			this.sounds['mistake'].play();
 			this.gameState.playerAction = false;
 			this.gameState.playerPattern = [];
-			this.playPattern();
+			if (!this.gameState.isStrict) this.playPattern();
+			else {
+				this.reset();
+				this.nextRound();
+			}
 		}
 	}
 	
@@ -216,10 +243,6 @@ class Game {
 			}, levelSpeed);
 		}
 		window.setTimeout(startPlayback, this.gameState.actionPattern.length*30+100);
-	}
-	
-	startPlayback() {
-		
 	}
 	
 	activate(color: string, playSound: boolean) {
