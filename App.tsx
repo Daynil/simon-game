@@ -104,12 +104,21 @@ class Board extends React.Component<any, any> {
 	render() {
 		return (
 			<div id="board" style={this.getBoardDimens()}>
-				<div className="color-block" id="green" style={this.getStatus('green')} onClick={() => this.props.game.activate('green')}></div>
-				<div className="color-block" id="red" style={this.getStatus('red')} onClick={() => this.props.game.activate('red')}></div>
-				<div className="color-block" id="blue" style={this.getStatus('blue')} onClick={() => this.props.game.activate('blue')}></div>
-				<div className="color-block" id="yellow" style={this.getStatus('yellow')} onClick={() => this.props.game.activate('yellow')}></div>
+				<div className="color-block" id="green" style={this.getStatus('green')} onClick={() => this.props.game.playerTest('green')}></div>
+				<div className="color-block" id="red" style={this.getStatus('red')} onClick={() => this.props.game.playerTest('red')}></div>
+				<div className="color-block" id="blue" style={this.getStatus('blue')} onClick={() => this.props.game.playerTest('blue')}></div>
+				<div className="color-block" id="yellow" style={this.getStatus('yellow')} onClick={() => this.props.game.playerTest('yellow')}></div>
 				<div id="inner-circle" style={this.getInnerDimens()}>
-					<span id="count">Count: {this.gameState.actionPattern.length}</span>
+					<div id="controls">
+						<span id="count">Count: {this.gameState.actionPattern.length}</span>
+						<div>
+							<span id="start" onClick={() => this.props.game.startGame()}>Start</span>
+							<span id="reset" onClick={() => this.props.game.reset()}>Reset</span>
+						</div>
+						<div>
+							<span id="strict"><span id="strict-light"></span>Strict</span>
+						</div>
+					</div>
 				</div>
 			</div>
 		);
@@ -135,10 +144,12 @@ class Foot extends React.Component<any, any> {
 class Game {
 	
 	refreshState;
+	patternPlayback;
 	
 	gameState = {
 		playerAction: false,
-		actionPattern: ['green', 'red', 'yellow', 'blue'],
+		playerPattern: [],
+		actionPattern: [],
 		board: {
 			['green']: false, ['red']: false, ['yellow']: false, ['blue']: false
 		}
@@ -148,32 +159,88 @@ class Game {
 		['green']: new Audio('https://s3.amazonaws.com/freecodecamp/simonSound1.mp3'), 
 		['red']: new Audio('https://s3.amazonaws.com/freecodecamp/simonSound2.mp3'), 
 		['yellow']: new Audio('https://s3.amazonaws.com/freecodecamp/simonSound3.mp3'), 
-		['blue']: new Audio('https://s3.amazonaws.com/freecodecamp/simonSound4.mp3')
+		['blue']: new Audio('https://s3.amazonaws.com/freecodecamp/simonSound4.mp3'),
+		['mistake']: new Audio('http://res.cloudinary.com/dz9rf4hwz/video/upload/v1453320543/error_ecvn1v.wav')
 	}
 	
 	constructor(refreshState) {
 		this.refreshState = refreshState;
 	}
 	
+	playerTest(color: string) {
+		if (!this.gameState.playerAction) return;
+		this.gameState.playerPattern.push(color);
+		let currMove = this.gameState.playerPattern.length-1;
+		if (this.gameState.playerPattern[currMove] == this.gameState.actionPattern[currMove]) {
+			this.activate(color, true);
+			if (this.gameState.playerPattern.length == this.gameState.actionPattern.length) {
+				this.gameState.playerAction = false;
+				this.gameState.playerPattern = [];
+				this.nextRound();
+			}
+		} else {
+			this.activate(color, false);
+			this.sounds['mistake'].play();
+			this.gameState.playerAction = false;
+			this.gameState.playerPattern = [];
+			this.playPattern();
+		}
+	}
+	
+	startGame() {
+		// Start button does nothing once game is underway
+		if (this.gameState.actionPattern.length > 0 ) return;
+		this.nextRound();
+	}
+	
+	nextRound() {
+		let possibleMoves = ['green', 'red', 'yellow', 'blue'];
+		let randomMove = possibleMoves[Math.floor(Math.random()*4)];
+		this.gameState.actionPattern.push(randomMove);
+		this.playPattern();
+	}
+	
 	playPattern() {
 		let patternIndex = 0;
 		let pattern = this.gameState.actionPattern;
-		let patternPlayback = window.setInterval(() => {
-			if (patternIndex < pattern.length) {
-				this.activate(pattern[patternIndex]);
-				patternIndex++;
-			} else window.clearInterval(patternPlayback);
-		}, 1000)
+		let levelSpeed = 1000 - (this.gameState.actionPattern.length*30);
+		let startPlayback = () => {
+			this.patternPlayback = window.setInterval(() => {
+				if (patternIndex < pattern.length) {
+					this.activate(pattern[patternIndex], true);
+					patternIndex++;
+				} else {
+					window.clearInterval(this.patternPlayback);
+					this.gameState.playerAction = true;
+				}
+			}, levelSpeed);
+		}
+		window.setTimeout(startPlayback, this.gameState.actionPattern.length*30+100);
 	}
 	
-	activate(color: string) {
+	startPlayback() {
+		
+	}
+	
+	activate(color: string, playSound: boolean) {
 		this.gameState.board[color] = !this.gameState.board[color];
-		this.sounds[color].play();
+		if (playSound) {
+			this.sounds[color].load();
+			this.sounds[color].play();
+		}
 		this.refreshState();
 		window.setTimeout(() => {
 			this.gameState.board[color] = !this.gameState.board[color];
 			this.refreshState();
 		}, 300);
+	}
+	
+	reset() {
+		window.clearInterval(this.patternPlayback);
+		this.gameState.actionPattern = [];
+		this.gameState.playerAction = false;
+		this.gameState.playerPattern = [];
+		this.refreshState();
 	}
 }
 
